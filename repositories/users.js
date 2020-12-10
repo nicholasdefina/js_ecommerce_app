@@ -24,7 +24,6 @@ class UsersRepository extends Repository {
     async compareHashedPasswords(dbPassword, inputPassword) {
         const [hash, salt] = dbPassword.split('.');
         const hashedInput = await this.generateHashedPassword(inputPassword, salt);
-        console.log(hash === hashedInput)
         return hash === hashedInput;
     }
 }

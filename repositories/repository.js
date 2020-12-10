@@ -3,6 +3,8 @@
 // 2) will error if multiple copies of same file open. 
 // 3) have to write to file system every time
 
+// TODO: add permissions some day if bored.
+
 const fs = require('fs');
 const crypto = require('crypto');
 
@@ -20,7 +22,8 @@ module.exports = class Repository {
     }
 
     async create(attrs) {
-        attrs.id = this.randomId();        
+        attrs.id = this.randomId();
+        const records = await this.getAll();        
         records.push(attrs);
         await this.writeAll(records);
         return attrs;
@@ -45,7 +48,7 @@ module.exports = class Repository {
 
     async delete(id) {
         const records = await this.getAll();
-        const filteredRecords = records.filter((record) => record.id === id);
+        const filteredRecords = records.filter((record) => record.id !== id);
         await this.writeAll(filteredRecords);
     }
 
@@ -61,7 +64,6 @@ module.exports = class Repository {
 
     async getOneBy(filters) {
         const records = await this.getAll();
-
         for (let record of records) {
             let found = true;
             for (let key in filters) {

@@ -8,13 +8,21 @@ module.exports = {
         .isLength({min:5, max:50})
         .withMessage('Title must be between 5 and 50 characters.'),
     requireProductPrice: check('price')
-    .trim()
-    .isLength({min:5, max:50}),
-    requireEmail: check('email')
         .trim()
         .toFloat()
         .isFloat({min: 1}) // not perfect but fine for demo
-        .withMessage('Price be be at least 1'), 
+        .withMessage('Price must be a number greater than 1'),
+    requireEmail: check('email')
+        .trim()
+        .normalizeEmail()
+        .isEmail()
+        .withMessage('Must be a valid email.')
+        .custom(async (email) => {
+            const existingUser = await usersRepo.getOneBy({email});
+            if(existingUser) {
+                throw new Error('This email has already been used.')
+            }
+        }),
     requirePassword: check('password')
         .trim()
         .isLength({min:4, max:20})
